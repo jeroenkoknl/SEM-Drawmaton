@@ -5,6 +5,7 @@ from sympy.plotting import plot_parametric
 from sympy.parsing.sympy_parser import parse_expr
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import cv2
 
 # a is an independent parameterized variable on [0,2*pi]
 a = np.linspace(0, 2*np.pi, 125, dtype=float)
@@ -37,29 +38,13 @@ def StoreDims(file):
     return np.array([L1, L2, L3, Gx, Gy])
 
 
-def StoreTargetXY(file):
-    print("use default pen path (arabesque tile)?")
-    if str(input()) == "yes":
-        targetxfunc = 8*sin(4*t) + 18
-        targetyfunc = 8*cos(3*t) + 18
-        targetxfuncs = [targetxfunc]
-        targetyfuncs = [targetyfunc]
-        starts = np.array([0])
-        ends = np.array([2*np.pi])
-        file.write(str(2) + "\n")
-        file.write(str(targetxfunc) + ", " + str(targetyfunc) + ", " + str(0.0) + ", " + str(2*np.pi))
-        return [targetxfuncs, targetyfuncs, starts, ends]
-
-    return StorePieceWiseXY(file)
-
-
-def StorePieceWiseXY(file):
+def StoreParametricEQs(file):
     targetxfuncs = []
     targetyfuncs = []
-    print("read piece wise functions from file?")
+    print("read parametric functions from txt file (yes)?, or input functions manually (no)")
     if (str(input()) == "yes"):
         return ReadStoredPieceWiseFuncs(file)
-    print("how many pieces? (at most 20)")
+    print("how many pieces? (at most 20, if continuous, enter 1)")
     piececount = int(input())
     file.write(str(piececount) + "\n")
     starts = np.zeros(piececount)
@@ -88,7 +73,7 @@ def StorePieceWiseXY(file):
         targetyfuncs.append(parse_expr(yinput))
         starts[i] = startinput
         ends[i] = endinput
-    return [targetxfuncs, targetyfuncs, starts, ends]
+    return targetxfuncs, targetyfuncs, starts, ends
 
 
 def ReadStoredPieceWiseFuncs(wfile):
@@ -108,33 +93,106 @@ def ReadStoredPieceWiseFuncs(wfile):
                     str(starts[i]) + ", " + str(ends[i]) + "\n")
         targetxfuncs.append(parse_expr(xfuncs[i]))
         targetyfuncs.append(parse_expr(yfuncs[i]))
-    return [targetxfuncs, targetyfuncs, starts, ends]
+    return targetxfuncs, targetyfuncs, starts, ends
 
 
-def CalcThetaVals(file, L1, L2, targetxfuncs, targetyfuncs, starts, ends):
+def ParametricToXY(file):
+    targetxfuncs, targetyfuncs, starts, ends = StoreParametricEQs(file)
+    tvals = np.linspace(0, 2*np.pi, 125)
+    xcoords = np.zeros(len(tvals))
+    ycoords = np.zeros(len(tvals))
+    funcind = 0
+    for i in range(len(tvals)):
+        tval = tvals[i]
+        if tval >= ends[funcind] and funcind != len(ends) - 1:
+            funcind += 1
+        xcoords[i] = targetxfuncs[funcind].subs(t, tval)
+        ycoords[i] = targetyfuncs[funcind].subs(t, tval)
+    return [xcoords, ycoords]
+
+
+def ImageToXY(file, L1, L2, L3):
+    print("enter path for image")
+    imgpath = str(input())
+    file.write(str(1) + "\n" + "image from " + imgpath + "\n")
+    print("processing image")
+    img = cv2.imread(imgpath, cv2.IMREAD_GRAYSCALE)
+    img2 = cv2.imread(imgpath, cv2.IMREAD_COLOR)
+    _, threshold = cv2.threshold(img, 117, 255, cv2.THRESH_BINARY)
+
+    height = img.shape[0]
+    width = img.shape[1]
+    maxlinkagelen = L2 + L3
+    pixpercm = ((height**2 + width**2)/(maxlinkagelen**2))**0.5
+
+    contours, _ = cv2.findContours(
+        threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    # cv2.drawContours(img2, contours, -1, (0, 0, 255), 5)
+    minrectcenter, minrectdims, minrectangle = cv2.minAreaRect(contours[0])
+    minrectcx = minrectcenter[0]
+    minrectcy = height - minrectcenter[1]
+
+    contour = np.ravel(contours[0])
+    # print(len(contour))
+    contour_arclen = len(contour)/pixpercm
+    step = 2*int(len(contour)/2/contour_arclen)
+    # print(pixpercm, height/pixpercm, width/pixpercm, contour_arclen, step)
+    xadjust = (width - minrectcx) / 2
+    yadjust = (height - minrectcy) / 2
+
+    tvals = np.arange(0, len(contour), step)
+    tvals = np.append(tvals, len(contour) - 2)
+    xcoords = np.zeros(len(tvals))
+    ycoords = np.zeros(len(tvals))
+
+    i = 0
+    for t in tvals:
+        x = (contour[t] + xadjust) / pixpercm
+        y = (height - contour[t+1] + yadjust) / pixpercm
+        # print(t, x, y)
+        xcoords[i] = x
+        ycoords[i] = y
+        i += 1
+
+    # print(len(xcoords), len(ycoords))
+    # print("\n\n", ycoords)
+    # # Showing the final image.
+    # cv2.imshow('image2', img2)
+
+    # # Exiting the window if 'q' is pressed on the keyboard.
+    # if cv2.waitKey(0) & 0xFF == ord('q'):
+    #     cv2.destroyAllWindows()
+    fig, ax = plt.subplots()
+    ax.plot(xcoords, ycoords)
+    plt.show()
+    return [xcoords, ycoords]
+
+
+def CalcThetaVals(file, L1, L2, L3):
+    print("Obtain target line path from image? (yes/no)")
+    if (str(input()) == "yes"):
+        XYcoords = ImageToXY(file, L1, L2, L3)
+    else:
+        print(
+            "Obtain target line path from parametric equations (continuous or piece-wise)?")
+        if (str(input()) == "yes"):
+            XYcoords = ParametricToXY(file, L1, L2, L3)
+
     print("Calculating theta values, please wait")
     rawname = "Raw" + file.name
     rawfile = open(rawname, "w")
-    CalcRawThetaVals(rawfile, L1, L2, targetxfuncs, targetyfuncs, starts, ends)
+    CalcRawThetaValsXY(rawfile, L1, L2, L3, XYcoords[0], XYcoords[1])
     return CleanThetaVals(rawfile.name, file)
 
 
-def CalcRawThetaVals(rawfile, L1, L2, targetxfuncs, targetyfuncs, starts, ends):
+def CalcRawThetaValsXY(rawfile, L1, L2, L3, xcoords, ycoords):
     delim = " "
-    L3 = L1 + L2
     th1, th2 = symbols('th1, th2', real=True)
-    funcind = 0
-    for i in range(len(a)):
-        aval = a[i]
-        # print(aval)
-        if aval >= ends[funcind] and funcind != len(ends) - 1:
-            funcind += 1
-        eqx = Eq(L2*cos(th2) - L3*sin(th1),
-                 targetxfuncs[funcind].subs(t, aval))
-        eqy = Eq(L2*sin(th2) + L3*cos(th1),
-                 targetyfuncs[funcind].subs(t, aval))
+    for i in range(len(xcoords)):
+        eqx = Eq(L2*cos(th2) - L3*sin(th1), xcoords[i])
+        eqy = Eq(L2*sin(th2) + L3*cos(th1), ycoords[i])
         soln = solve((eqx, eqy), (th1, th2))
-        # print(soln, "\n")
+        print(soln, "\n")
         rawfile.write(str(soln[0][0]) + delim + str(soln[0][1]) +
                       delim + str(soln[1][0]) + delim + str(soln[1][1]) + "\n")
     rawfile.close()
@@ -210,7 +268,7 @@ def animate(t):
     plt.grid()
 
 
-print("do you want to run from existing file?")
+print("do you want to run from existing file (yes/no)?")
 if str(input()) == "yes":
     print("input file path: ")
     file = str(input())
@@ -232,27 +290,20 @@ else:
     t = symbols('t')
     print("input new file name: ")
     file = open(str(input()), "w")
-    # nf = "Raw" + file.name
-    # print(nf)
 
     dims = StoreDims(file)
     L1 = dims[0]
     L2 = dims[1]
-    L3 = L1 + L2
-    Gx = dims[2]
-    Gy = dims[3]
+    L3 = dims[2]
+    Gx = dims[3]
+    Gy = dims[4]
     # print(L1)
 
-    targetfuncs = StoreTargetXY(file)
-    targetxfuncs = targetfuncs[0]
-    targetyfuncs = targetfuncs[1]
-    starts = targetfuncs[2]
-    ends = targetfuncs[3]
-
-    thetavals = CalcThetaVals(
-        file, L1, L2, targetxfuncs, targetyfuncs, starts, ends)
+    thetavals = CalcThetaVals(file, L1, L2, L3)
     theta1 = thetavals[0]
     theta2 = thetavals[1]
+    a = np.linspace(0, 2*np.pi, len(theta1), dtype=float)
+
     file.close()
 
 fig, ax = plt.subplots()
@@ -271,7 +322,7 @@ anim = FuncAnimation(fig, animate,
                      frames=360, interval=100, repeat=true)
 plt.show()
 
-print("Do you want to save the animation as a .gif?")
+print("Do you want to save the animation as a .gif? (yes/no)")
 if str(input()) == "yes":
     print("enter name for animation, including .gif extension")
     name = str(input())
