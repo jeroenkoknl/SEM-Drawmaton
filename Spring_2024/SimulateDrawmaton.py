@@ -14,6 +14,7 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
     fiof.StoreDims(simulation_filename, L1, L2, L3, Gx, Gy)
     if (drawing_src_type == "image"):
         # define the position on the xy grid that the image should occupy (min rectangle based on the geometry of the linkages)
+        # temporary fixed values for Dims5
         targetx = 13
         targety = 26
         targetw = 16

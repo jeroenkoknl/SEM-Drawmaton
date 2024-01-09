@@ -1,0 +1,10 @@
+Piecewise parametric file format example. There are four columns, separated by ", ".
+The first entry in the ith row is the x_i(t) parametric function
+The second entry in the ith row is the y_i(t) parametric function
+The third entry in the ith row is the domain start value in radians (>= 0 radians)
+The fourth entry in the ith row is the domain end value in radians (<= 2*pi)
+The equations must start on the first row of the file
+The domain start of the first row must be 0. The domain end of the last row must be 2*pi
+SAMPLE of generic piecewise parametric function of t with two pieces:
+x1(t), y1(t), 0, 3.1415926
+x2(t), y2(t), 3.1415926, 6.2831853
