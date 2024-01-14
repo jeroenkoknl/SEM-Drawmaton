@@ -8,8 +8,12 @@ import numpy as np
 def PlotXY(simulation_filename):
     _, coords, _, _ = fiof.ReadDrawmatonSimulation(simulation_filename)
     fig, ax = plt.subplots()
-    ax.plot(coords[:, 0], coords[:, 1])
+    ax.plot(coords[:, 0], coords[:, 1], color='red')
+    # ax.scatter([0],[0], color='red')
     ax.set_aspect('equal')
+    # ax.set_xlim(Gx - 1.25*np.sqrt(Gx**2 + Gy**2), 0.9*(L2 + L3))
+    # ax.set_ylim(-L2, 0.9*(L2 + L3))
+    # ax.axis(False)
     plt.show()
     
 def CalculateRotorToBaseGap(simulation_filename):

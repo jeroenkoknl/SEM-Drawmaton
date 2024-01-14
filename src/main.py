@@ -22,10 +22,11 @@ Gy = 15.0
 dims = np.array([L1, L2, L3, Gx, Gy])
 drawing_src_filename = "./InputImages/womanprofile.jpg"
 drawing_src_type = "image"
-simulation_filename = "./SimulationFiles/WomanProfileDims5.txt"
-save_animation_filename = "./Animations/WomanProfileDims5.gif"
+simulation_filename = "./SimulationFiles/ArabesqueDims5.txt"
+save_animation_filename = "./Animations/ArabesqueDims5.gif"
 # sim.CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simulation_filename)
 sim.AnimateDrawmaton(simulation_filename)
 # print(util.CalculateRotorToBaseGap(simulation_filename))
 # util.ExportAnimation(simulation_filename, save_animation_filename)
 # util.ExportRotorsSVG(simulation_filename, "./Rotors/WomanProfileDims5Bottom.svg", "./Rotors/WomanProfileDims5Top.svg")
+# util.PlotXY("./SimulationFiles/TulipDims5Sim.txt")
