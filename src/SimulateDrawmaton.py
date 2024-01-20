@@ -25,7 +25,7 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
     elif (drawing_src_type == "parametric"):
         targetxfuncs, targetyfuncs, starts, ends = fiof.ReadStoredParametricEQs(drawing_src_filename)
         fiof.StoreParametricEQs(simulation_filename, targetxfuncs, targetyfuncs, starts, ends)
-        datacount = 120 + 5*len(targetxfuncs)
+        datacount = 300 + 20*len(targetxfuncs)
         print(datacount)
         xcoords, ycoords = parametricToXY.ParametricToXY(targetxfuncs, targetyfuncs, starts, ends, datacount)
     elif (drawing_src_type == "svg"):
@@ -33,7 +33,7 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
         targety = 26
         targetw = 16
         targeth = 16 
-        xcoords, ycoords = svgToXY.SVGtoXY(L1, L2, L3, Gx, Gy, drawing_src_filename, targetx, targety, targetw, targeth, 5)
+        xcoords, ycoords = svgToXY.SVGtoXY(L1, L2, L3, Gx, Gy, drawing_src_filename, targetx, targety, targetw, targeth, 15)
         fiof.StoreImagePath(simulation_filename, drawing_src_filename)
     elif (drawing_src_type == 'coordinates'):
         xcoords, ycoords = fiof.ReadStoredXYCoords(drawing_src_filename)
@@ -42,17 +42,18 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
         return
     fiof.StoreDataCount(simulation_filename,len(xcoords))
     fiof.StoreXYCoords(simulation_filename, xcoords, ycoords)
+    theta1, theta2 = xyToTheta.CalcThetaVals(L1, L2, L3, xcoords, ycoords)
     # rawS0theta1, rawS0theta2, rawS1theta1, rawS1theta2 = xyToTheta.CalcRawThetaValsXY()
-    raw_theta_vals = xyToTheta.CalcRawThetaValsXY(L1, L2, L3, xcoords, ycoords)
-    diff_cutoff = 0.6
-    theta1, theta2 = xyToTheta.CleanThetaVals(raw_theta_vals, diff_cutoff)
-    fiof.StoreRawThetaVals(simulation_filename, raw_theta_vals)
+    # raw_theta_vals = xyToTheta.CalcRawThetaValsXYfsolve(L1, L2, L3, xcoords, ycoords)
+    # diff_cutoff = 0.6
+    # theta1, theta2 = xyToTheta.CleanThetaVals(raw_theta_vals, diff_cutoff)
+    # fiof.StoreRawThetaVals(simulation_filename, raw_theta_vals)
     fiof.StoreThetaVals(simulation_filename, theta1, theta2)
     a, r_bottom, r_top, c_bottom, c_top = thetasToRadii.CalcRadiiVals(L1, Gx, Gy, theta1, theta2)
     fiof.StoreRadiiVals(simulation_filename, a, r_bottom, r_top, c_bottom, c_top)
     
     
-def AnimateDrawmaton(simulation_filename, frames=360, interval=100, repeat=True, show=True):
+def AnimateDrawmaton(simulation_filename, frames=360, interval=20, repeat=True, show=True):
     def animate(t, ax, L1, L2, L3, Gx, Gy, theta1, theta2, a, r_bottom, r_top, c_bottom, c_top):
         # Save frame number t for later use
         i = t
@@ -116,7 +117,9 @@ def AnimateDrawmaton(simulation_filename, frames=360, interval=100, repeat=True,
     r_top = radiiVals[:, 2]
     c_bottom = radiiVals[:, 3]
     c_top = radiiVals[:, 4]
-    anim = FuncAnimation(fig, animate, fargs=(ax, L1, L2, L3, Gx, Gy, theta1, theta2, a, r_bottom, r_top, c_bottom, c_top), frames=frames, interval=interval, repeat=repeat)
+    frames = len(a)
+    interval = 1000//60
+    anim = FuncAnimation(fig, animate, fargs=(ax, L1, L2, L3, Gx, Gy, theta1, theta2, a, r_bottom, r_top, c_bottom, c_top), frames=frames, interval=1, repeat=repeat)
     if (show):
         plt.show()
     return anim

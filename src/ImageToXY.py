@@ -49,7 +49,7 @@ def helper_ImageToXY(imgfile, L1, L2, L3):
     # Calculate how many x and y pairs to store, by finding the arclength of the contour in cm,
     # and determing step, the number of indices between the x,y pairs to be sampled from the contour array
     contour_arclen = len(contour)/pixpercm
-    step = 2*int(len(contour)/2/contour_arclen)
+    step = 2*int(len(contour)/10/contour_arclen)
     if (step == 0): step = 2
     
     # Establish tvals, an array representing the time at which each x,y pair is drawn

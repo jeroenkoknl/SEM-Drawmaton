@@ -28,11 +28,11 @@ Gy = 15.0
 # Gy = 16.0
 
 dims = np.array([L1, L2, L3, Gx, Gy])
-drawing_src_filename = "./InputImages/TulipTest.jpg"
+drawing_src_filename = "./InputImages/blackcat.jpg"
 drawing_src_type = "image"
-simulation_filename = "./SimulationFiles/TulipFSolveDims5olve.txt"
-save_animation_filename = "./Animations/TulipFSolveDims5olve.gif"
-sim.CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simulation_filename)
+simulation_filename = "./SimulationFiles/ArabesqueFSolveDims5.txt"
+save_animation_filename = "./Animations/BlackCatFSolveDims5.gif"
+# sim.CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simulation_filename)
 sim.AnimateDrawmaton(simulation_filename)
 # print(util.CalculateRotorToBaseGap(ysimulation_filename))
 # util.ExportAnimation(simulation_filename, save_animation_filename)
