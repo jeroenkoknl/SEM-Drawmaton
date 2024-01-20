@@ -1,7 +1,12 @@
 import numpy as np
 from sympy import *
+from scipy.optimize import fsolve
+import time
+
 
 def CalcRawThetaValsXY(L1, L2, L3, xcoords, ycoords):
+    start_time = time.time()  # Record the start time
+
     # Turns the target pen path's X,Y coordinates into theta1 and theta2 values
     # based on the linkage dimensions, using sympy's solver
     th1, th2 = symbols('th1, th2', real=True)
@@ -15,6 +20,10 @@ def CalcRawThetaValsXY(L1, L2, L3, xcoords, ycoords):
         raw_solns[i:,] = np.array([soln[0][0], soln[0][1], soln[1][0], soln[1][1]])
         # rawfile.write(str(soln[0][0]) + delim + str(soln[0][1]) +
         #               delim + str(soln[1][0]) + delim + str(soln[1][1]) + "\n")
+        
+    end_time = time.time()  # Record the end time
+    elapsed_time = end_time - start_time
+    print(f"Sympy Total runtime: {elapsed_time} seconds")
     return raw_solns
 
 def CleanThetaVals(raw_vals, diff_cutoff=0.6):
@@ -37,6 +46,33 @@ def CleanThetaVals(raw_vals, diff_cutoff=0.6):
     print("finished clean")
     # print(theta1, theta2)
     return theta1, theta2
+
+def CalcRawThetaValsXYfsolve(L1, L2, L3, xcoords, ycoords):
+    start_time = time.time()  # Record the start time
+
+    # Vectorized function for fsolve
+    def func(thetas, i):
+        return [L2*np.cos(thetas[1]) - L3*np.sin(thetas[0]) - xcoords[i], L2*np.sin(thetas[1]) + L3*np.cos(thetas[0]) - ycoords[i]]
+    
+    def jac(thetas, i):
+        return [[-L3*np.cos(thetas[0]), -L2*np.sin(thetas[1])], [-L3*np.sin(thetas[0]), L2*np.cos(thetas[1])]]
+    
+    raw_solns = np.zeros((len(xcoords), 4))
+    initial_guess = [0,0]
+    for i in range(len(xcoords)):
+        # print(initial_guess)
+        # Solve using fsolve
+        soln = fsolve(func, initial_guess, args=(i))
+        # print(f"{i} solving for ({xcoords[i]},{ycoords[i]})", soln)
+        # Store the solutions
+        raw_solns[i, :] = soln[0], soln[1], soln[0], soln[1]
+        initial_guess = [soln[0], soln[1]]
+    
+    end_time = time.time()  # Record the end time
+    elapsed_time = end_time - start_time
+    print(f"FSolve Total runtime: {elapsed_time} seconds")
+    
+    return raw_solns
 
 # def CalcRawThetaValsXY(rawfile, L1, L2, L3, xcoords, ycoords):
 #     # Turns the target pen path's X,Y coordinates into theta1 and theta2 values

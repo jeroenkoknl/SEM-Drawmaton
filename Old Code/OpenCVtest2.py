@@ -19,6 +19,7 @@ def helper_ImageToXY(imgfile, L1, L2, L3):
     # Create contours, and find minimum enclosing rectangle's center coordinates
     contours, _ = cv2.findContours(
         threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    print(len(contours))
     correctcontour = contours[0]
     for i in range(len(contours)):
         cv2.drawContours(img2, contours, i, (0, 0, 255), 5)
@@ -27,7 +28,8 @@ def helper_ImageToXY(imgfile, L1, L2, L3):
         print("is this the right line drawing? (y/n)")
         if cv2.waitKey(0) & 0xFF == ord('n'):
             cv2.destroyWindow(name)
-            # img2 = cv2.imread('CarFront.jpg', cv2.IMREAD_COLOR)
+            print('oops')
+            img2 = cv2.imread(imgfile, cv2.IMREAD_COLOR)
         else:
             correctcontour = contours[i]
             print("gottem")
@@ -44,7 +46,7 @@ def helper_ImageToXY(imgfile, L1, L2, L3):
     
     # print(rx, ry, rw, rh)
     # Unravel the array of (x,y) coordinates into an array of alternating x and y vals [x1, y1, x2, y2, ...]
-    contour = np.ravel(contours[0])
+    contour = np.ravel(correctcontour)
     # Calculate how many x and y pairs to store, by finding the arclength of the contour in cm,
     # and determing step, the number of indices between the x,y pairs to be sampled from the contour array
     contour_arclen = len(contour)/pixpercm
@@ -54,9 +56,9 @@ def helper_ImageToXY(imgfile, L1, L2, L3):
     if (step == 0): step = 2
     # Establish tvals, an array representing the time at which each x,y pair is drawn
     tvals = np.arange(0, len(contour), step)
-    print(contour, len(contour))
+    # print(contour, len(contour))
     tvals = np.append(tvals, len(contour) - 2)
-    print(tvals, len(tvals))
+    # print(tvals, len(tvals))
     xcoords = np.zeros(len(tvals))
     ycoords = np.zeros(len(tvals))
 
@@ -138,7 +140,7 @@ L2 = 16.2
 L3 = 24.0
 Gx = -4.0
 Gy = 15.0
-imgfile = "./DrawingImages/womanprofile.jpg"
+imgfile = "./InputImages/looptest.png"
 targetx = 13
 targety = 26
 targetw = 16

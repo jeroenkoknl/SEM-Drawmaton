@@ -3,6 +3,7 @@ from sympy import *
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import ImageToXY as imgToXY
+import SVGToXY as svgToXY
 import ParametricToXY as parametricToXY
 import FileIOFunctions as fiof
 import XYtoThetaVals as xyToTheta
@@ -27,6 +28,13 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
         datacount = 120 + 5*len(targetxfuncs)
         print(datacount)
         xcoords, ycoords = parametricToXY.ParametricToXY(targetxfuncs, targetyfuncs, starts, ends, datacount)
+    elif (drawing_src_type == "svg"):
+        targetx = 13
+        targety = 26
+        targetw = 16
+        targeth = 16 
+        xcoords, ycoords = svgToXY.SVGtoXY(L1, L2, L3, Gx, Gy, drawing_src_filename, targetx, targety, targetw, targeth, 5)
+        fiof.StoreImagePath(simulation_filename, drawing_src_filename)
     elif (drawing_src_type == 'coordinates'):
         xcoords, ycoords = fiof.ReadStoredXYCoords(drawing_src_filename)
     else:
