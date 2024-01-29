@@ -31,23 +31,34 @@ def ParseSVG(filepath):
 
 def SVGtoCoords(width, height, parsed, pointspercurve):
     numcurves = len(parsed) - 2
-    n = numcurves*pointspercurve - numcurves + 1
+    # n = numcurves*pointspercurve - numcurves + 2
+    # n = (numcurves - 1)*(pointspercurve - 2) + 3
+    n = (numcurves - 2)*(pointspercurve - 2) + 2*pointspercurve + 1
     print(f'numcurves = {numcurves}, n = {n}')
-    coords = np.zeros((2, int(n)))
+    # print(n)
+    startind = 0
+    for obj in parsed:
+        if (type(obj).__name__ == 'CubicBezier' or type(obj).__name__ == 'Line'):
+            startind += pointspercurve - 1
+    print(startind)
+    
+    coords = np.zeros((2, startind + 1))
+    print(coords.shape)
     
     startind = 0
     for obj in parsed:
         if(type(obj).__name__ == 'CubicBezier'):
+            print(startind, startind+pointspercurve, interpolate_cubic_bezier([obj.start.real, obj.start.imag], [obj.control1.real, obj.control1.imag], [obj.control2.real, obj.control2.imag], [obj.end.real, obj.end.imag], pointspercurve))
             coords[:, startind:startind+pointspercurve] = interpolate_cubic_bezier([obj.start.real, obj.start.imag], [obj.control1.real, obj.control1.imag], [obj.control2.real, obj.control2.imag], [obj.end.real, obj.end.imag], pointspercurve)
             print(type(obj).__name__, ', start: ', (round(obj.start.real, 3), round(obj.start.imag, 3)), ' , control1: ', (round(obj.control1.real, 3), round(obj.control1.imag, 3)), ' , control2: ', (round(obj.control2.real, 3), round(obj.control2.imag, 3)), ' , end:', (round(obj.end.real, 3), round(obj.end.imag, 3)))
             startind += pointspercurve - 1
-        if(type(obj).__name__ == 'Line'):
+        elif(type(obj).__name__ == 'Line'):
             coords[:, startind:startind+pointspercurve] = interpolate_line([obj.start.real, obj.start.imag], [obj.end.real, obj.end.imag], pointspercurve)
             print(type(obj).__name__, ', start: ', (round(obj.start.real, 3), round(obj.start.imag, 3)), ' , end:', (round(obj.end.real, 3), round(obj.end.imag, 3)))
             startind += pointspercurve - 1
-        else:
-            print(type(obj).__name__, ', start/end coords:', ((round(obj.start.real, 3), round(obj.start.imag, 3)), (round(obj.end.real, 3), round(obj.end.imag, 3))))
-    print(coords)
+        # else:
+        #     print(type(obj).__name__, ', start/end coords:', ((round(obj.start.real, 3), round(obj.start.imag, 3)), (round(obj.end.real, 3), round(obj.end.imag, 3))))
+    # print(coords)
     return coords
     
 
@@ -126,10 +137,10 @@ def PixcoordsToXY(L1, L2, L3, Gx, Gy, targetx, targety, targetw, targeth, pixcoo
 
 
 
-filepath = './InputImages/catAI.svg'
+filepath = './InputSVGs/TwoCats.svg'
 width, height, parsed = ParseSVG(filepath)
 
-pointspercurve = 5
+pointspercurve = 17
 # start_point = [100.83, 275.66]
 # control_point1 = [103.65, 271.52]
 # control_point2 = [120.18, 255.79]
@@ -138,17 +149,17 @@ pointspercurve = 5
 # print(interpolate_cubic_bezier([143.94, 253.19], [163.34, 251.07], [186.46, 257.82], [187.05, 265.57], pointspercurve))
 print('-'*20)
 pixcoords = SVGtoCoords(width, height, parsed, pointspercurve)
+# print(pixcoords)
 
-L1 = 4.1
-L2 = 16.2
-L3 = 24.0
-Gx = -4.0
-Gy = 15.0
-targetx = 13
-targety = 26
-targetw = 16
-targeth = 16 
-# PixcoordsToXY(L1, L2, L3, Gx, Gy, targetx, targety, targetw, targeth, pixcoords, width, height)
+L1 = 5.8
+L2 = 16.6
+L3 = 24.3
+Gx = -4.5
+Gy = 16.0
+targetx = 13.4
+targety = 27.1
+targetw = 16.3
+targeth = 16.3 
 fig, ax = plt.subplots()
 ax.plot(pixcoords[0,:], height - pixcoords[1,:], ls='-', marker='.')
 ax.set_aspect('equal')

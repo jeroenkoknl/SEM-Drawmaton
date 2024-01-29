@@ -51,7 +51,7 @@ def helper_ImageToXY(imgfile, L1, L2, L3):
     # and determing step, the number of indices between the x,y pairs to be sampled from the contour array
     contour_arclen = len(contour)/pixpercm
     # step = 2*int(0.5*len(contour)/contour_arclen)
-    step = 2*int(len(contour)/2/contour_arclen)
+    step = 2*int(len(contour)/6/contour_arclen)
     print(len(contour), contour_arclen, pixpercm, step)
     if (step == 0): step = 2
     # Establish tvals, an array representing the time at which each x,y pair is drawn
@@ -135,16 +135,16 @@ def ImageToXY(L1, L2, L3, Gx, Gy, imgfile, targetx, targety, targetw, targeth):
     return adjxcoords, adjycoords
 
 
-L1 = 4.1
-L2 = 16.2
-L3 = 24.0
-Gx = -4.0
-Gy = 15.0
-imgfile = "./InputImages/looptest.png"
-targetx = 13
-targety = 26
-targetw = 16
-targeth = 16 
+L1 = 5.8
+L2 = 16.6
+L3 = 24.3
+Gx = -4.5
+Gy = 16.0
+imgfile = "./InputImages/womanprofile.jpg"
+targetx = 13.4
+targety = 27.1
+targetw = 16.3
+targeth = 16.3
 xcoords, ycoords = ImageToXY(L1, L2, L3, Gx, Gy, imgfile, targetx, targety, targetw, targeth)
 print(xcoords, ycoords)
 print(len(xcoords))

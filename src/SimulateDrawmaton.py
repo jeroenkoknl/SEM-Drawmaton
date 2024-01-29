@@ -15,11 +15,11 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
     fiof.StoreDims(simulation_filename, L1, L2, L3, Gx, Gy)
     if (drawing_src_type == "image"):
         # define the position on the xy grid that the image should occupy (min rectangle based on the geometry of the linkages)
-        # temporary fixed values for Dims5
-        targetx = 13
-        targety = 26
-        targetw = 16
-        targeth = 16 
+        # temporary fixed values for Dims6
+        targetx = 13.4
+        targety = 27.1
+        targetw = 16.3
+        targeth = 16.3
         xcoords, ycoords = imgToXY.ImageToXY(L1, L2, L3, Gx, Gy, drawing_src_filename, targetx, targety, targetw, targeth) 
         fiof.StoreImagePath(simulation_filename, drawing_src_filename)
     elif (drawing_src_type == "parametric"):
@@ -29,11 +29,11 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
         print(datacount)
         xcoords, ycoords = parametricToXY.ParametricToXY(targetxfuncs, targetyfuncs, starts, ends, datacount)
     elif (drawing_src_type == "svg"):
-        targetx = 13
-        targety = 26
-        targetw = 16
-        targeth = 16 
-        xcoords, ycoords = svgToXY.SVGtoXY(L1, L2, L3, Gx, Gy, drawing_src_filename, targetx, targety, targetw, targeth, 15)
+        targetx = 13.4
+        targety = 27.1
+        targetw = 16.3
+        targeth = 16.3
+        xcoords, ycoords = svgToXY.SVGtoXY(L1, L2, L3, Gx, Gy, drawing_src_filename, targetx, targety, targetw, targeth, 17)
         fiof.StoreImagePath(simulation_filename, drawing_src_filename)
     elif (drawing_src_type == 'coordinates'):
         xcoords, ycoords = fiof.ReadStoredXYCoords(drawing_src_filename)
@@ -53,7 +53,7 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
     fiof.StoreRadiiVals(simulation_filename, a, r_bottom, r_top, c_bottom, c_top)
     
     
-def AnimateDrawmaton(simulation_filename, frames=360, interval=20, repeat=True, show=True):
+def AnimateDrawmaton(simulation_filename, frames=360, interval=20, repeat=True, show=True, fig=plt.figure(), ax=plt.axes()):
     def animate(t, ax, L1, L2, L3, Gx, Gy, theta1, theta2, a, r_bottom, r_top, c_bottom, c_top):
         # Save frame number t for later use
         i = t
@@ -107,7 +107,8 @@ def AnimateDrawmaton(simulation_filename, frames=360, interval=20, repeat=True, 
         ax.set_ylim(-L2, 0.9*(L2 + L3))
         plt.grid()
     
-    fig, ax = plt.subplots()
+    # if (fig != None):
+    #     fig, ax = plt.subplots()
     dims, coords, thetaVals, radiiVals = fiof.ReadDrawmatonSimulation(simulation_filename)
     L1, L2, L3, Gx, Gy = dims
     theta1 = thetaVals[:, 0]
