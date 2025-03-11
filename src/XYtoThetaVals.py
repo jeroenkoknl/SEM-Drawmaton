@@ -21,7 +21,9 @@ def CalcThetaVals(L1, L2, L3, xcoords, ycoords):
         soln = fsolve(func, initial_guess, args=(i))
         # print(f"{i} solving for ({xcoords[i]},{ycoords[i]})", soln)
         # Store the solutions
+        # solns[i, :] = soln[0], soln[1]
         solns[i, :] = soln[0], soln[1]
+        
         initial_guess = [soln[0], soln[1]]
     
     end_time = time.time()  # Record the end time

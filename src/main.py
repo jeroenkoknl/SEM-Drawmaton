@@ -28,15 +28,16 @@ Gx = -4.5
 Gy = 16.0
 
 dims = np.array([L1, L2, L3, Gx, Gy])
-drawing_src_filename = "./InputEquations/ArabesqueDims6Eqns.txt"
-drawing_src_type = "parametric"
-simulation_filename = "./SimulationFiles/Dims6/Dims6Arabesque.txt"
-save_animation_filename = "./Animations/Dims6Arabesque.gif"
+drawing_src_filename = "./InputImages/TulipTest upside down.jpg"
+drawing_src_type = "image"
+simulation_filename = "./SimulationFiles/Dims6/Dims6TulipUpsideDown.txt"
+# save_animation_filename = "./Animations/Dims6Arabesque.gif"
 # sim.CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simulation_filename)
 # print(util.CalculateRotorToBaseGap(simulation_filename))
+# print(NDimArray(util.CalcMinSpace(simulation_filename)))
 # sim.AnimateDrawmaton(simulation_filename)
 # util.ExportAnimation(simulation_filename, save_animation_filename)
 # util.CalcRadiusOfCurvatue(simulation_filename)
-# util.ExportRotorsSVG(simulation_filename, "./Rotors/TestDims6ArabesqueBottom.svg", "./Rotors/TestDims6ArabesqueTop.svg")
+util.ExportRotorsSVG(simulation_filename, "./Rotors/Dims6TulipUpsideDownBottom.svg", "./Rotors/Dims6TulipUpsideDownTop.svg")
 # util.PlotXY("./SimulationFiles/TulipDims5Sim.txt")
 # util.CompareSimulations('./SimulationFiles/Dims5/ArabesqueFsolveDims5.txt', './SimulationFiles/Dims6/Dims6Arabesque.txt')

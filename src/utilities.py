@@ -45,6 +45,18 @@ def CalcRadiusOfCurvatue(simulation_filename):
     plt.grid()
     plt.show()
     
+def CalcMinSpace(simulation_filename):
+    dims, coords, thetaVals, radiiVals = fiof.ReadDrawmatonSimulation(simulation_filename)
+    max_r = np.max(radiiVals[:, 1:3])
+    L1, L2, L3, Gx, Gy = dims
+    min_x = Gx - max_r
+    min_y = L2*np.sin(np.min(thetaVals[:, 1]))
+    max_x = np.max(coords[:, 0])    
+    max_y = np.max([np.max(coords[:,1]), np.max(Gy+max_r)])
+    return min_x, min_y, max_x, max_y, max_x - min_x, max_y - min_y
+    
+    
+    
 def CompareSimulations(sim_file1, sim_file2):
     fig, ax = plt.subplots()
     anim1 = sim.AnimateDrawmaton(sim_file1, fig=fig, ax=ax)
