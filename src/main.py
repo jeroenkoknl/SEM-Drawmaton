@@ -27,6 +27,7 @@ L3 = 24.3
 Gx = -4.5
 Gy = 16.0
 
+# hello
 dims = np.array([L1, L2, L3, Gx, Gy])
 drawing_src_filename = "./InputImages/TulipTest upside down.jpg"
 drawing_src_type = "image"
