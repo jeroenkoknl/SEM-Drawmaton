@@ -1,0 +1,6 @@
+numpy
+sympy
+matplotlib
+scipy
+opencv-python
+svg.path
