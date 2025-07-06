@@ -104,32 +104,20 @@ def scale(factor, xcoords, ycoords, currw, currh):
     return [xcoords, ycoords]    
    
 
-def ImageToXY(L1, L2, L3, Gx, Gy, imgfile, targetx, targety, targetw, targeth, interactive=True):
+def ImageToXY(L1, L2, L3, Gx, Gy, imgfile, targetx, targety, targetw, targeth, interactive=True, preview_mode='none'):
     print("2. Processing input image...")
     print("   - Reading image file")
-    fig, ax = plt.subplots()
     xcoords, ycoords, brectx, brecty, brectw, brecth = helper_ImageToXY(imgfile, L1, L2, L3, interactive)
-    # ax.plot(xcoords, ycoords)
-    # print(brectx, brecty, brectw, brecth)
-
     adjxcoords, adjycoords = PositionImage(xcoords, ycoords, brectx, brecty, brectw, brecth, targetx, targety, targetw, targeth)
     
-    ax.plot(adjxcoords, adjycoords)
-    ax.scatter([0,Gx], [0, Gy])
-    refcirc = plt.Circle((0, 0), radius=L2 + L3, fill=False)
-    brect = Rectangle((brectx,brecty), brectw, -brecth, color="orange", fill=False)
-    adjrect = Rectangle((targetx, targety), targetw, -targeth, color="green", fill=False)
-    ax.add_patch(brect)
-    ax.add_patch(adjrect)
-    ax.set_xlim(-20, 50)
-    ax.set_ylim(-20, 50)
-    ax.set_aspect('equal')
-    plt.gca().add_artist(refcirc)
-    plt.grid()
-    print("   - Showing preview (will close automatically in 3 seconds)...")
-    plt.draw()
-    plt.pause(3)  # Show plot for 3 seconds
-    plt.close(fig)
-    print("   - Preview closed, continuing with simulation...")
+    import utilities as util
+    util.show_preview(
+        coords=(adjxcoords, adjycoords),
+        dims=(L1, L2, L3, Gx, Gy),
+        title="Image Preview",
+        preview_mode=preview_mode,
+        close_delay=3
+    )
+    
     return adjxcoords, adjycoords
 

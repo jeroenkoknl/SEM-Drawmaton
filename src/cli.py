@@ -41,12 +41,14 @@ def create():
 @click.option('--target-w', type=float, default=16.3, help='Target width')
 @click.option('--target-h', type=float, default=16.3, help='Target height')
 @click.option('--interactive/--non-interactive', default=False, help='Enable/disable interactive contour selection')
-def image(l1, l2, l3, gx, gy, input, output, target_x, target_y, target_w, target_h, interactive):
+@click.option('--preview', type=click.Choice(['none', 'auto', 'manual']), default='none',
+              help='Preview mode: none (default), auto (3s), or manual')
+def image(l1, l2, l3, gx, gy, input, output, target_x, target_y, target_w, target_h, interactive, preview):
     """Create simulation from an image file"""
     dims = np.array([l1, l2, l3, gx, gy])
     input_abs = get_absolute_path(input)
     output_abs = get_absolute_path(output)
-    sim.CreateDrawmatonSimulation(dims, input_abs, "image", output_abs, interactive=interactive)
+    sim.CreateDrawmatonSimulation(dims, input_abs, "image", output_abs, interactive=interactive, preview_mode=preview)
     click.echo(f"Created simulation file from image: {output}")
 
 @create.command()
@@ -57,12 +59,14 @@ def image(l1, l2, l3, gx, gy, input, output, target_x, target_y, target_w, targe
 @click.option('--target-y', type=float, default=27.1, help='Target Y position')
 @click.option('--target-w', type=float, default=16.3, help='Target width')
 @click.option('--target-h', type=float, default=16.3, help='Target height')
-def svg(l1, l2, l3, gx, gy, input, output, target_x, target_y, target_w, target_h):
+@click.option('--preview', type=click.Choice(['none', 'auto', 'manual']), default='none',
+              help='Preview mode: none (default), auto (3s), or manual')
+def svg(l1, l2, l3, gx, gy, input, output, target_x, target_y, target_w, target_h, preview):
     """Create simulation from an SVG file"""
     dims = np.array([l1, l2, l3, gx, gy])
     input_abs = get_absolute_path(input)
     output_abs = get_absolute_path(output)
-    sim.CreateDrawmatonSimulation(dims, input_abs, "svg", output_abs)
+    sim.CreateDrawmatonSimulation(dims, input_abs, "svg", output_abs, preview_mode=preview)
     click.echo(f"Created simulation file from SVG: {output}")
 
 @cli.command()

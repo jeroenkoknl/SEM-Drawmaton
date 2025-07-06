@@ -77,30 +77,20 @@ def BoundingRectangle(coords):
     return minx, miny, w, h
    
 
-def SVGtoXY(L1, L2, L3, Gx, Gy, filepath, targetx, targety, targetw, targeth, pointspercurve=10):
+def SVGtoXY(L1, L2, L3, Gx, Gy, filepath, targetx, targety, targetw, targeth, pointspercurve=10, preview_mode='none'):
     width, height, parsedSVG = ParseSVG(filepath)
     pixcoords = SVGtoPixelCoords(width, height, parsedSVG, pointspercurve)
     pixcoords[1,:] = height - pixcoords[1,:]
     brectx, brecty, brectw, brecth = BoundingRectangle(pixcoords)
     
-    fig, ax = plt.subplots()
-    # ax.plot(xcoords, ycoords)
-    # print(brectx, brecty, brectw, brecth)
-
     adjxcoords, adjycoords = imgToXY.PositionImage(pixcoords[0,:], pixcoords[1,:], brectx, brecty, brectw, brecth, targetx, targety, targetw, targeth)
     
-    ax.plot(adjxcoords, adjycoords)
-    ax.scatter([0,Gx], [0, Gy])
-    refcirc = plt.Circle((0, 0), radius=L2 + L3, fill=False)
-    brect = Rectangle((brectx,brecty), brectw, -brecth, color="orange", fill=False)
-    adjrect = Rectangle((targetx, targety), targetw, -targeth, color="green", fill=False)
-    ax.add_patch(brect)
-    ax.add_patch(adjrect)
-    ax.set_xlim(-20, 50)
-    ax.set_ylim(-20, 50)
-    ax.set_aspect('equal')
-    plt.gca().add_artist(refcirc)
-    plt.grid()
-    plt.show()
-    # print(adjxcoords, adjycoords)
+    util.show_preview(
+        coords=(adjxcoords, adjycoords),
+        dims=(L1, L2, L3, Gx, Gy),
+        title="SVG Preview",
+        preview_mode=preview_mode,
+        close_delay=3
+    )
+    
     return adjxcoords, adjycoords
