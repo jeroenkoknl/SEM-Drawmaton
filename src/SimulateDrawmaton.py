@@ -9,7 +9,7 @@ import FileIOFunctions as fiof
 import XYtoThetaVals as xyToTheta
 import ThetaValsToRadiiVals as thetasToRadii
 
-def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simulation_filename):
+def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simulation_filename, interactive=False):
     print("\n=== Starting Drawmaton Simulation ===")
     print("1. Initializing simulation...")
     L1, L2, L3, Gx, Gy = dims
@@ -22,7 +22,7 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
         targety = 27.1
         targetw = 16.3
         targeth = 16.3
-        xcoords, ycoords = imgToXY.ImageToXY(L1, L2, L3, Gx, Gy, drawing_src_filename, targetx, targety, targetw, targeth) 
+        xcoords, ycoords = imgToXY.ImageToXY(L1, L2, L3, Gx, Gy, drawing_src_filename, targetx, targety, targetw, targeth, interactive=interactive) 
         fiof.StoreImagePath(simulation_filename, drawing_src_filename)
     elif (drawing_src_type == "parametric"):
         targetxfuncs, targetyfuncs, starts, ends = fiof.ReadStoredParametricEQs(drawing_src_filename)

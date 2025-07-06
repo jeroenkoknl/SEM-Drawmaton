@@ -65,8 +65,15 @@ def CompareSimulations(sim_file1, sim_file2):
     
 
 def ExportAnimation(simulation_filename, animation_filename):
+    print("   - Starting animation export (this may take a few minutes)...")
+    # Use non-interactive backend for saving
+    matplotlib.use('Agg')
     anim = sim.AnimateDrawmaton(simulation_filename, show=False)
-    anim.save(filename=animation_filename)
+    # Save with appropriate writer
+    anim.save(filename=animation_filename, writer='pillow')
+    print(f"   - Animation saved to {animation_filename}")
+    # Reset backend to default for other operations
+    matplotlib.use('TkAgg')
     
 def ExportRotorsSVG(simulation_filename, bottom_rotor_filename, top_rotor_filename):
         _, _, _, radiiVals = fiof.ReadDrawmatonSimulation(simulation_filename)

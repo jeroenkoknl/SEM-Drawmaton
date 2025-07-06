@@ -1,1 +1,75 @@
-The SEM-Drawmaton is a completely mechanical drawing machine capable of drawing any continuous line drawing. The SEM-Drawmaton utilizes two rotors (cams) that displace a set of linkages to accurately trace out a desired image. The SEM-Drawmaton is based on Da Vinci's Drawmaton https://www.drawmaton.com/#/. This repository details the code required to compute the rotor profiles necessary to draw a given image or line drawing. The main.py file in the src directory is used to create an SEM-Drawmaton simulation given a set of dimensions, the file containing the source image, a flag describing the type of source image, and the destination file. The source image that the Drawmaton draws can be an actual image (.jpg, .png, etc), a set of piecewise-parametric equations, or a set of ordered X,Y coordinates for the Drawmaton to trace. The SimulateDrawmaton.py file creates the simulation and provides animation capability. In order to create a simulation, the code first converts the input image or parametric equations into X,Y coordinates. Then, SciPy.optimize's fsolve is utilized to calculate the set of Theta values, which dictate the angular position of the linkages. Then, the radii of the two rotor profiles are calculated. The dimensions, coordinates, raw and cleaned Theta values, and radii values are stored in a simulation file with the given destination file name. Users can animate the simulation, or perform other analysis functions located in the utilities.py folder to analyze the SEM-Drawmaton simulation. This computational model of the SEM-Drawmaton was developed in close conjunction with a Fusion 360 CAD model of the SEM-Drawmaton.
+# SEM-Drawmaton
+
+The SEM-Drawmaton is a completely mechanical drawing machine capable of drawing any continuous line drawing. The SEM-Drawmaton utilizes two rotors (cams) that displace a set of linkages to accurately trace out a desired image. The SEM-Drawmaton is based on Da Vinci's Drawmaton https://www.drawmaton.com/#/.
+
+## Overview
+
+This repository contains code to compute rotor profiles necessary to draw a given image or line drawing. The application supports various input types:
+- Image files (.jpg, .png, etc)
+- SVG files
+- Parametric equations
+- Ordered X,Y coordinates
+
+The process involves:
+1. Converting input to X,Y coordinates
+2. Calculating Theta values (linkage angles) using SciPy.optimize's fsolve
+3. Computing rotor radii
+4. Storing simulation data (dimensions, coordinates, theta values, radii)
+
+## Command Line Interface
+
+The application provides a command-line interface (CLI) for all operations:
+
+### Installation
+```bash
+pip install -r requirements.txt
+```
+
+### Basic Usage
+```bash
+# Create simulation from image (non-interactive)
+python -m cli create image -i input.jpg -o simulation.txt
+
+# Create simulation with interactive contour selection
+python -m cli create image -i input.jpg -o simulation.txt --interactive
+
+# Create simulation from SVG
+python -m cli create svg -i input.svg -o simulation.txt
+
+# Show animation
+python -m cli animate -i simulation.txt
+
+# Export animation to GIF
+python -m cli export-animation -i simulation.txt -o animation.gif
+
+# Export rotor profiles
+python -m cli export-rotors -i simulation.txt -b bottom.svg -t top.svg
+
+# Show rotor gaps
+python -m cli show-gaps -i simulation.txt
+```
+
+### Common Options
+All dimension parameters can be customized:
+```bash
+python -m cli create image -i input.jpg -o sim.txt \
+    --l1 5.8 --l2 16.6 --l3 24.3 --gx -4.5 --gy 16.0
+```
+
+### Image Processing Options
+```bash
+python -m cli create image -i input.jpg -o sim.txt \
+    --target-x 13.4 --target-y 27.1 \
+    --target-w 16.3 --target-h 16.3
+```
+
+## Implementation Details
+
+The application consists of several key components:
+- `main.py`: Entry point for script-based usage
+- `cli.py`: Command-line interface implementation
+- `SimulateDrawmaton.py`: Core simulation and animation logic
+- `ImageToXY.py`, `SVGToXY.py`: Input processing
+- `utilities.py`: Analysis and export functions
+
+This computational model was developed in close conjunction with a Fusion 360 CAD model of the SEM-Drawmaton.

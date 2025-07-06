@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import cv2
 
-def helper_ImageToXY(imgfile, L1, L2, L3):
+def helper_ImageToXY(imgfile, L1, L2, L3, interactive=True):
 
     img = cv2.imread(imgfile, cv2.IMREAD_GRAYSCALE)
     # Create a binary version of the img to improve quality of contour detection
@@ -21,19 +21,29 @@ def helper_ImageToXY(imgfile, L1, L2, L3):
     contours, _ = cv2.findContours(
         threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     correctcontour = contours[0]
-    for i in range(len(contours)):
-        cv2.drawContours(img2, contours, i, (0, 0, 255), 5)
-        name = "contour " + str(i)
-        cv2.imshow(name, img2)
-        print("is this the right line drawing? (y/n)")
+    if interactive:
+        for i in range(len(contours)):
+            cv2.drawContours(img2, contours, i, (0, 0, 255), 5)
+            name = "contour " + str(i)
+            cv2.imshow(name, img2)
+            print("is this the right line drawing? (y/n)")
 
-        if cv2.waitKey(0) & 0xFF == ord('n'):
-            cv2.destroyWindow(name)
-        else:
-            correctcontour = contours[i]
-            print("gottem")
-            cv2.destroyWindow(name)
-            break
+            if cv2.waitKey(0) & 0xFF == ord('n'):
+                cv2.destroyWindow(name)
+            else:
+                correctcontour = contours[i]
+                print("Selected contour", i)
+                cv2.destroyWindow(name)
+                break
+    else:
+        # In non-interactive mode, select the largest contour
+        max_area = 0
+        for i, contour in enumerate(contours):
+            area = cv2.contourArea(contour)
+            if area > max_area:
+                max_area = area
+                correctcontour = contour
+        print("Automatically selected largest contour")
         
     pixpercm = ((height**2 + width**2)/(maxlinkagespan**2))**0.5
     minrectcenter, minrectdims, minrectangle = cv2.minAreaRect(correctcontour)
@@ -94,11 +104,11 @@ def scale(factor, xcoords, ycoords, currw, currh):
     return [xcoords, ycoords]    
    
 
-def ImageToXY(L1, L2, L3, Gx, Gy, imgfile, targetx, targety, targetw, targeth):
+def ImageToXY(L1, L2, L3, Gx, Gy, imgfile, targetx, targety, targetw, targeth, interactive=True):
     print("2. Processing input image...")
     print("   - Reading image file")
     fig, ax = plt.subplots()
-    xcoords, ycoords, brectx, brecty, brectw, brecth = helper_ImageToXY(imgfile, L1, L2, L3)
+    xcoords, ycoords, brectx, brecty, brectw, brecth = helper_ImageToXY(imgfile, L1, L2, L3, interactive)
     # ax.plot(xcoords, ycoords)
     # print(brectx, brecty, brectw, brecth)
 
