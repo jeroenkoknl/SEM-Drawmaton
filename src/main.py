@@ -29,16 +29,25 @@ Gy = 16.0
 
 # hello2
 dims = np.array([L1, L2, L3, Gx, Gy])
-drawing_src_filename = "./InputImages/TulipTest upside down.jpg"
+drawing_src_filename = "./InputImages/linecrosstest.jpg"
 drawing_src_type = "image"
-simulation_filename = "./SimulationFiles/Dims6/Dims6TulipUpsideDown.txt"
+simulation_filename = "./SimulationFiles/Dims6/Dims6TwoCats.txt"
 # save_animation_filename = "./Animations/Dims6Arabesque.gif"
-# sim.CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simulation_filename)
-# print(util.CalculateRotorToBaseGap(simulation_filename))
-# print(NDimArray(util.CalcMinSpace(simulation_filename)))
-# sim.AnimateDrawmaton(simulation_filename)
-# util.ExportAnimation(simulation_filename, save_animation_filename)
-# util.CalcRadiusOfCurvatue(simulation_filename)
-util.ExportRotorsSVG(simulation_filename, "./Rotors/Dims6TulipUpsideDownBottom.svg", "./Rotors/Dims6TulipUpsideDownTop.svg")
+# Create and run the simulation
+sim.CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simulation_filename)
+
+# Calculate and show the rotor gap
+print("\n5. Calculating rotor gaps...")
+rotor_gap = util.CalculateRotorToBaseGap(simulation_filename)
+print(f"   - Rotor to base gap: {rotor_gap}")
+
+# Show the animation
+print("\n6. Starting animation...")
+print("   - A new window will open showing the mechanical simulation")
+print("   - The animation will continuously loop until you close the window")
+print("   - Close the window when you want to stop the simulation")
+sim.AnimateDrawmaton(simulation_filename)
+print("\n=== Simulation Complete ===\n")
+# util.ExportRotorsSVG(simulation_filename, "./Rotors/Dims6TulipUpsideDownBottom.svg", "./Rotors/Dims6TulipUpsideDownTop.svg")
 # util.PlotXY("./SimulationFiles/TulipDims5Sim.txt")
 # util.CompareSimulations('./SimulationFiles/Dims5/ArabesqueFsolveDims5.txt', './SimulationFiles/Dims6/Dims6Arabesque.txt')

@@ -95,8 +95,8 @@ def scale(factor, xcoords, ycoords, currw, currh):
    
 
 def ImageToXY(L1, L2, L3, Gx, Gy, imgfile, targetx, targety, targetw, targeth):
-
-    print("Converting image to XY coordinates")
+    print("2. Processing input image...")
+    print("   - Reading image file")
     fig, ax = plt.subplots()
     xcoords, ycoords, brectx, brecty, brectw, brecth = helper_ImageToXY(imgfile, L1, L2, L3)
     # ax.plot(xcoords, ycoords)
@@ -116,7 +116,10 @@ def ImageToXY(L1, L2, L3, Gx, Gy, imgfile, targetx, targety, targetw, targeth):
     ax.set_aspect('equal')
     plt.gca().add_artist(refcirc)
     plt.grid()
-    plt.show()
-    # print(adjxcoords, adjycoords)
+    print("   - Showing preview (will close automatically in 3 seconds)...")
+    plt.draw()
+    plt.pause(3)  # Show plot for 3 seconds
+    plt.close(fig)
+    print("   - Preview closed, continuing with simulation...")
     return adjxcoords, adjycoords
 

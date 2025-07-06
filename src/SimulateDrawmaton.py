@@ -10,6 +10,8 @@ import XYtoThetaVals as xyToTheta
 import ThetaValsToRadiiVals as thetasToRadii
 
 def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simulation_filename):
+    print("\n=== Starting Drawmaton Simulation ===")
+    print("1. Initializing simulation...")
     L1, L2, L3, Gx, Gy = dims
     fiof.SetUpFile(simulation_filename)
     fiof.StoreDims(simulation_filename, L1, L2, L3, Gx, Gy)
@@ -40,8 +42,10 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
     else:
         print("improper drawing src type flag")
         return
+    print("3. Processing coordinates...")
     fiof.StoreDataCount(simulation_filename,len(xcoords))
     fiof.StoreXYCoords(simulation_filename, xcoords, ycoords)
+    print("4. Calculating mechanical movements...")
     theta1, theta2 = xyToTheta.CalcThetaVals(L1, L2, L3, xcoords, ycoords)
     # rawS0theta1, rawS0theta2, rawS1theta1, rawS1theta2 = xyToTheta.CalcRawThetaValsXY()
     # raw_theta_vals = xyToTheta.CalcRawThetaValsXYfsolve(L1, L2, L3, xcoords, ycoords)
@@ -53,7 +57,10 @@ def CreateDrawmatonSimulation(dims, drawing_src_filename, drawing_src_type, simu
     fiof.StoreRadiiVals(simulation_filename, a, r_bottom, r_top, c_bottom, c_top)
     
     
-def AnimateDrawmaton(simulation_filename, frames=360, interval=20, repeat=True, show=True, fig=plt.figure(), ax=plt.axes()):
+def AnimateDrawmaton(simulation_filename, frames=360, interval=20, repeat=True, show=True):
+    # Create a new figure and axes
+    fig = plt.figure(figsize=(10, 10))
+    ax = plt.axes()
     def animate(t, ax, L1, L2, L3, Gx, Gy, theta1, theta2, a, r_bottom, r_top, c_bottom, c_top):
         # Save frame number t for later use
         i = t
@@ -120,9 +127,11 @@ def AnimateDrawmaton(simulation_filename, frames=360, interval=20, repeat=True, 
     c_top = radiiVals[:, 4]
     frames = len(a)
     interval = 1000//60
-    anim = FuncAnimation(fig, animate, fargs=(ax, L1, L2, L3, Gx, Gy, theta1, theta2, a, r_bottom, r_top, c_bottom, c_top), frames=frames, interval=1, repeat=repeat)
-    if (show):
-        plt.show()
+    print("   - Starting animation (this may take a few seconds)...")
+    anim = FuncAnimation(fig, animate, fargs=(ax, L1, L2, L3, Gx, Gy, theta1, theta2, a, r_bottom, r_top, c_bottom, c_top), 
+                        frames=frames, interval=20, repeat=repeat)
+    if show:
+        plt.show(block=True)
     return anim
         
     
